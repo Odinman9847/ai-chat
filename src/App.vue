@@ -1,8 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import UserInput from "./components/UserInput.vue";
+</script>
 
 <template>
   <main>
-    <h1>AI Chat</h1>
+    <UserInput />
   </main>
 </template>
 
