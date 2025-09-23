@@ -3,6 +3,10 @@ import { ref } from "vue";
 
 const emit = defineEmits(["sendMessage"]);
 
+defineProps<{
+  isLoading: boolean;
+}>();
+
 const message = ref("");
 
 function sendMessage() {
@@ -14,8 +18,13 @@ function sendMessage() {
 
 <template>
   <form @submit.prevent="sendMessage">
-    <input type="text" v-model="message" placeholder="Type your message..." />
-    <button type="submit">Send</button>
+    <input
+      type="text"
+      v-model="message"
+      placeholder="Type your message..."
+      :disabled="isLoading"
+    />
+    <button type="submit" :disabled="isLoading">Send</button>
   </form>
 </template>
 
@@ -41,5 +50,11 @@ button {
   color: white;
   border-radius: 4px;
   cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>
