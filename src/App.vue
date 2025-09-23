@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import UserInput from "./components/UserInput.vue";
 import ChatWindow from "./components/ChatWindow.vue";
 
@@ -14,12 +14,29 @@ let messageId = 0;
 
 const isLoading = ref(false);
 
+function formatConversationForApi(history: Message[]): string {
+  const systemPrompt = "You are a helpful, friendly, and concise AI assistant.";
+  const formattedHistory = history
+    .map((msg) => {
+      const role = msg.role.charAt(0).toUpperCase() + msg.role.slice(1);
+      return `${role}: ${msg.content}`;
+    })
+    .join("\n");
+
+  return `${systemPrompt}\n\nConversation History:\n${formattedHistory}\nAssistant:`;
+}
+
 function handleNewMessage(messageText: string) {
   messages.value.push({
     id: messageId++,
     role: "user",
     content: messageText,
   });
+
+  // TEMPORARY TEST
+  const contextPrompt = formatConversationForApi(messages.value);
+  console.log("Context Prompt For API:");
+  console.log(contextPrompt);
 
   isLoading.value = true;
 
