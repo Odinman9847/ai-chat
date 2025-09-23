@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const emit = defineEmits(["sendMessage"]);
+
 const message = ref("");
 
 function sendMessage() {
-  console.log("Sending message:", message.value);
+  if (message.value.trim() === "") return;
+  emit("sendMessage", message.value);
   message.value = "";
 }
 </script>
