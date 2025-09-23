@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import MessageBubble from "./MessageBubble.vue";
+import type { Message } from "@/App.vue";
 defineProps<{
-  messages: string[];
+  messages: Message[];
 }>();
 </script>
 
 <template>
   <div class="chat-window">
     <MessageBubble
-      v-for="(message, index) in messages"
-      :key="index"
+      v-for="message in messages"
+      :key="message.id"
       :message="message"
     />
   </div>

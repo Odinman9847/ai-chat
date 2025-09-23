@@ -3,11 +3,21 @@ import { ref } from "vue";
 import UserInput from "./components/UserInput.vue";
 import ChatWindow from "./components/ChatWindow.vue";
 
-const messages = ref<string[]>([]);
+export type Message = {
+  id: number;
+  role: "user" | "assistant";
+  content: string;
+};
 
-function handleNewMessage(message: string) {
-  console.log("App.vue received message:", message);
-  messages.value.push(message);
+const messages = ref<Message[]>([]);
+let messageId = 0;
+
+function handleNewMessage(messageText: string) {
+  messages.value.push({
+    id: messageId++,
+    role: "user",
+    content: messageText,
+  });
 }
 </script>
 
