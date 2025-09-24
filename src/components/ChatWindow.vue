@@ -1,13 +1,27 @@
 <script setup lang="ts">
+import { ref, watch, nextTick } from "vue";
 import MessageBubble from "./MessageBubble.vue";
 import type { Message } from "@/App.vue";
-defineProps<{
+const props = defineProps<{
   messages: Message[];
 }>();
+
+const chatWindowEl = ref<HTMLDivElement | null>(null);
+watch(
+  () => props.messages,
+  async () => {
+    await nextTick();
+    const el = chatWindowEl.value;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  },
+  { deep: true },
+);
 </script>
 
 <template>
-  <div class="chat-window">
+  <div class="chat-window" ref="chatWindowEl">
     <div v-if="messages.length === 0" class="welcome-message">
       <h1>Odin Chat</h1>
       <h2>What's on your mind?</h2>
