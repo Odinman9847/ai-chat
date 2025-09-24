@@ -107,8 +107,7 @@ main {
 
 .chat-container {
   width: 100%;
-  max-width: 800px;
-  height: 100vh;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;

@@ -32,24 +32,41 @@ function sendMessage() {
 form {
   display: flex;
   padding: 1rem;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #eee;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 input {
   flex-grow: 1;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.25rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 0;
+}
+
+input:focus {
+  border-color: #007bff;
 }
 
 button {
-  margin-left: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 1rem 2rem;
   border: none;
   background-color: #007bff;
   color: white;
-  border-radius: 4px;
+  border-radius: 999px;
+  font-size: 1.25rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 button:disabled,

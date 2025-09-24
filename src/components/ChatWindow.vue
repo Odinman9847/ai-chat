@@ -8,20 +8,59 @@ defineProps<{
 
 <template>
   <div class="chat-window">
-    <MessageBubble
-      v-for="message in messages"
-      :key="message.id"
-      :message="message"
-    />
+    <div v-if="messages.length === 0" class="welcome-message">
+      <h1>Odin Chat</h1>
+      <h2>What's on your mind?</h2>
+    </div>
+    <div v-else class="message-list">
+      <MessageBubble
+        v-for="message in messages"
+        :key="message.id"
+        :message="message"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .chat-window {
   flex-grow: 1;
-  padding: 1rem;
+  padding: 3rem 2rem 1rem;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+.welcome-message {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #aaa;
+}
+
+.welcome-message h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.welcome-message h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 600px) {
+  .chat-window {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
 }
 </style>

@@ -20,6 +20,7 @@ div {
   max-width: 80%;
   width: fit-content;
   word-wrap: break-word;
+  font-size: 1.25rem;
 }
 
 .user-bubble {
