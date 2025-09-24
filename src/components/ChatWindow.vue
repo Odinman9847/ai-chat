@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 import MessageBubble from "./MessageBubble.vue";
+import LoadingIndicator from "./LoadingIndicator.vue";
 import type { Message } from "@/App.vue";
 const props = defineProps<{
   messages: Message[];
+  isLoading: boolean;
 }>();
 
 const chatWindowEl = ref<HTMLDivElement | null>(null);
@@ -32,6 +34,7 @@ watch(
         :key="message.id"
         :message="message"
       />
+      <LoadingIndicator v-if="isLoading" />
     </div>
   </div>
 </template>
