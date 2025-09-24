@@ -15,7 +15,8 @@ let messageId = 0;
 const isLoading = ref(false);
 
 function formatConversationForApi(history: Message[]): string {
-  const systemPrompt = "You are a helpful, friendly, and concise AI assistant.";
+  const systemPrompt =
+    "You are a helpful, friendly, intelligent AI assistant. Your name is Odin.";
   const formattedHistory = history
     .map((msg) => {
       const role = msg.role.charAt(0).toUpperCase() + msg.role.slice(1);
@@ -26,43 +27,92 @@ function formatConversationForApi(history: Message[]): string {
   return `${systemPrompt}\n\nConversation History:\n${formattedHistory}\nAssistant:`;
 }
 
-function handleNewMessage(messageText: string) {
+async function handleNewMessage(messageText: string) {
   messages.value.push({
     id: messageId++,
     role: "user",
     content: messageText,
   });
 
-  // TEMPORARY TEST
-  const contextPrompt = formatConversationForApi(messages.value);
-  console.log("Context Prompt For API:");
-  console.log(contextPrompt);
+  // THIS IS FOR TESTING, REMOVE TO USE LLM
+  messages.value.push({
+    id: messageId++,
+    role: "assistant",
+    content: `This is a hardcoded response`,
+  });
+  return;
+  // END OF TESTING
 
   isLoading.value = true;
 
-  setTimeout(() => {
+  try {
+    const contextPrompt = formatConversationForApi(messages.value);
+    const apiUrl = "https://apifreellm.com/api/chat";
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: contextPrompt,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      messages.value.push({
+        id: messageId++,
+        role: "assistant",
+        content: data.response,
+      });
+    } else {
+      throw new Error(data.error || "An unknown API error occured.");
+    }
+  } catch (error) {
+    console.error("Error fetching AI response:", error);
+
     messages.value.push({
       id: messageId++,
       role: "assistant",
-      content: "I am a humble AI assistant. This is a hardcoded response.",
+      content: `Sorry, I ran into an error. Please try again. (${error})`,
     });
-
+  } finally {
     isLoading.value = false;
-  }, 1000);
+  }
 }
 </script>
 
 <template>
   <main>
-    <ChatWindow :messages="messages" />
-    <UserInput @sendMessage="handleNewMessage" :is-loading="isLoading" />
+    <div class="chat-container">
+      <ChatWindow :messages="messages" />
+      <UserInput @sendMessage="handleNewMessage" :is-loading="isLoading" />
+    </div>
   </main>
 </template>
 
 <style scoped>
 main {
+  background-color: #f7f7f7;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 800px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  gap: 1rem;
 }
 </style>

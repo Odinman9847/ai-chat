@@ -22,5 +22,6 @@ defineProps<{
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 </style>
