@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, withCtx } from "vue";
 import UserInput from "./components/UserInput.vue";
 import ChatWindow from "./components/ChatWindow.vue";
 
@@ -35,19 +35,19 @@ async function handleNewMessage(messageText: string) {
   });
 
   // THIS IS FOR TESTING, REMOVE TO USE LLM
-  messages.value.push({
-    id: messageId++,
-    role: "assistant",
-    content: `This is a hardcoded response`,
-  });
-  return;
+  //  messages.value.push({
+  //    id: messageId++,
+  //    role: "assistant",
+  //    content: `This is a hardcoded response`,
+  //  });
+  //  return;
   // END OF TESTING
 
   isLoading.value = true;
 
   try {
-    const contextPrompt = formatConversationForApi(messages.value);
-    const apiUrl = "https://apifreellm.com/api/chat";
+    const messagesForApi = messages.value.map(({ id, ...rest }) => rest);
+    const apiUrl = "http://localhost:11434/v1/chat/completions";
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -55,7 +55,9 @@ async function handleNewMessage(messageText: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        message: contextPrompt,
+        model: "qwen3:4b-instruct",
+        messages: messagesForApi,
+        stream: false,
       }),
     });
 
@@ -64,16 +66,13 @@ async function handleNewMessage(messageText: string) {
     }
 
     const data = await response.json();
+    const assistantResponse = data.choices[0].message.content;
 
-    if (data.status === "success") {
-      messages.value.push({
-        id: messageId++,
-        role: "assistant",
-        content: data.response,
-      });
-    } else {
-      throw new Error(data.error || "An unknown API error occured.");
-    }
+    messages.value.push({
+      id: messageId++,
+      role: "assistant",
+      content: assistantResponse,
+    });
   } catch (error) {
     console.error("Error fetching AI response:", error);
 
