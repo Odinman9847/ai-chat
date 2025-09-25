@@ -1,21 +1,47 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
 import MessageBubble from "./MessageBubble.vue";
 import LoadingIndicator from "./LoadingIndicator.vue";
 import type { Message } from "@/App.vue";
+
 const props = defineProps<{
   messages: Message[];
   isLoading: boolean;
 }>();
 
 const chatWindowEl = ref<HTMLDivElement | null>(null);
+const isAutoScrollEnabled = ref(true);
+
+function handleScroll() {
+  const el = chatWindowEl.value;
+  if (!el) return;
+
+  const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 10;
+
+  if (isAtBottom) {
+    isAutoScrollEnabled.value = true;
+  } else {
+    isAutoScrollEnabled.value = false;
+  }
+}
+
+onMounted(() => {
+  chatWindowEl.value?.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  chatWindowEl.value?.removeEventListener("scroll", handleScroll);
+});
+
 watch(
   () => props.messages,
   async () => {
     await nextTick();
-    const el = chatWindowEl.value;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
+    if (isAutoScrollEnabled.value) {
+      const el = chatWindowEl.value;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
     }
   },
   { deep: true },
