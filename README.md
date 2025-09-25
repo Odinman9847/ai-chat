@@ -21,7 +21,7 @@ You can run this frontend against your own local Ollama server.
 1.  **Clone the repository:**
 
     ```bash
-    git clone <your-repo-url>
+    git clone https://github.com/Odinman9847/ai-chat.git
     cd ai-chat
     ```
 
