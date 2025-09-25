@@ -35,12 +35,12 @@ async function handleNewMessage(messageText: string) {
   });
 
   // THIS IS FOR TESTING, REMOVE TO USE LLM
-  //messages.value.push({
-  //  id: messageId++,
-  //  role: "assistant",
-  //  content: `This is a hardcoded response`,
-  //});
-  //return;
+  messages.value.push({
+    id: messageId++,
+    role: "assistant",
+    content: `This is a hardcoded response`,
+  });
+  return;
   // END OF TESTING
 
   isLoading.value = true;
