@@ -57,7 +57,7 @@ async function handleNewMessage(messageText: string) {
       body: JSON.stringify({
         model: "qwen3:4b-instruct",
         messages: messagesForApi,
-        stream: false,
+        stream: true,
       }),
     });
 
@@ -65,14 +65,54 @@ async function handleNewMessage(messageText: string) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    const assistantResponse = data.choices[0].message.content;
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("Could not get response reader");
+    }
+    const decoder = new TextDecoder();
 
+    const assistantMessageId = messageId++;
     messages.value.push({
-      id: messageId++,
+      id: assistantMessageId,
       role: "assistant",
-      content: assistantResponse,
+      content: "",
     });
+
+    const assistantMessage = messages.value.find(
+      (m) => m.id === assistantMessageId,
+    );
+    if (!assistantMessage) {
+      throw new Error("Could not find assistant message to update.");
+    }
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      if (isLoading.value) {
+        isLoading.value = false;
+      }
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+
+      for (const line of lines) {
+        const jsonString = line.replace(/^data: /, "");
+        if (jsonString === "[DONE]") continue;
+
+        try {
+          const parsed = JSON.parse(jsonString);
+          const content = parsed.choices[0].delta.content;
+
+          if (content) {
+            assistantMessage.content += content;
+          }
+        } catch (error) {
+          console.error("Error parsing streaming JSON:", error);
+        }
+      }
+    }
   } catch (error) {
     console.error("Error fetching AI response:", error);
 
