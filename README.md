@@ -1,33 +1,53 @@
-# ai-chat
+# AI Chat
 
-This template should help get you started developing with Vue 3 in Vite.
+A simple, privacy-focused chatbot interface for self-hosted Large Language Models.
 
-## Recommended IDE Setup
+![Project Screenshot](public/screenshot.png)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Type Support for `.vue` Imports in TS
+### Built With
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- **Frontend:** [Vue.js](https://vuejs.org/)
+- **Backend:** A self-hosted [Ollama](https://ollama.com/) instance
+- **Tunneling:** [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/)
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Running Your Own Instance
 
-## Project Setup
+You can run this frontend against your own local Ollama server.
 
-```sh
-npm install
-```
+1.  **Clone the repository:**
 
-### Compile and Hot-Reload for Development
+    ```bash
+    git clone <your-repo-url>
+    cd ai-chat
+    ```
 
-```sh
-npm run dev
-```
+2.  **Install dependencies:**
 
-### Type-Check, Compile and Minify for Production
+    ```bash
+    npm install
+    ```
 
-```sh
-npm run build
-```
+3.  **Configure your backend URL:**
+    Modify the file `.env` in the project root and add your Ollama server's URL.
+
+    ```
+    # .env
+    VITE_API_URL=http://localhost:11434
+    ```
+
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+### ⚠️ Public Demo Disclaimer
+
+The public version of this site connects to a server running on my personal computer. **It will be offline most of the time.**
+
+For a reliable experience, please follow the instructions above to run the chatbot against your own backend.
