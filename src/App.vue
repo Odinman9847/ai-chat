@@ -13,6 +13,15 @@ const messages = ref<Message[]>([]);
 let messageId = 0;
 
 const isLoading = ref(false);
+const isGenerating = ref(false);
+const abortController = ref<AbortController | null>(null);
+
+function stopGeneration() {
+  if (abortController.value) {
+    abortController.value.abort();
+    console.log("Fetch request aborted.");
+  }
+}
 
 function formatConversationForApi(history: Message[]): string {
   const systemPrompt =
@@ -34,7 +43,7 @@ async function handleNewMessage(messageText: string) {
     content: messageText,
   });
 
-  // THIS IS FOR TESTING, REMOVE TO USE LLM
+  // TESTING, UNCOMMENT TO USE HARDCODED RESPONSE
   //  messages.value.push({
   //    id: messageId++,
   //    role: "assistant",
@@ -44,6 +53,8 @@ async function handleNewMessage(messageText: string) {
   // END OF TESTING
 
   isLoading.value = true;
+  isGenerating.value = true;
+  abortController.value = new AbortController();
 
   try {
     const messagesForApi = messages.value.map(({ id, ...rest }) => rest);
@@ -59,6 +70,7 @@ async function handleNewMessage(messageText: string) {
         messages: messagesForApi,
         stream: true,
       }),
+      signal: abortController.value.signal,
     });
 
     if (!response.ok) {
@@ -114,15 +126,20 @@ async function handleNewMessage(messageText: string) {
       }
     }
   } catch (error) {
-    console.error("Error fetching AI response:", error);
-
-    messages.value.push({
-      id: messageId++,
-      role: "assistant",
-      content: `Sorry, I ran into an error. Please try again. (${error})`,
-    });
+    if ((error as Error).name === "AbortError") {
+      console.log("Generation stopped by user.");
+    } else {
+      console.error("Error fetching AI response:", error);
+      messages.value.push({
+        id: messageId++,
+        role: "assistant",
+        content: `Sorry, I ran into an error. Please try again. (${error})`,
+      });
+    }
   } finally {
     isLoading.value = false;
+    isGenerating.value = false;
+    abortController.value = null;
   }
 }
 </script>
@@ -131,7 +148,12 @@ async function handleNewMessage(messageText: string) {
   <main>
     <div class="chat-container">
       <ChatWindow :messages="messages" :is-loading="isLoading" />
-      <UserInput @sendMessage="handleNewMessage" :is-loading="isLoading" />
+      <UserInput
+        @sendMessage="handleNewMessage"
+        @stopGeneration="stopGeneration"
+        :is-loading="isLoading"
+        :is-generating="isGenerating"
+      />
     </div>
   </main>
 </template>

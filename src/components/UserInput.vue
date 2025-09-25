@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from "vue";
 
-const emit = defineEmits(["sendMessage"]);
+const emit = defineEmits(["sendMessage", "stopGeneration"]);
 
 defineProps<{
-  isLoading: boolean;
+  isGenerating: boolean;
 }>();
 
 const message = ref("");
@@ -47,11 +47,19 @@ watch(message, async () => {
       type="text"
       v-model="message"
       placeholder="Type your message..."
-      :disabled="isLoading"
+      :disabled="isGenerating"
       @keydown="handleKeydown"
       rows="1"
     />
-    <button type="submit" :disabled="isLoading">Send</button>
+    <button v-if="!isGenerating" type="submit">Send</button>
+    <button
+      v-else
+      type="button"
+      @click="emit('stopGeneration')"
+      class="stop-button"
+    >
+      Stop
+    </button>
   </form>
 </template>
 
@@ -105,5 +113,13 @@ button:disabled,
 input:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.stop-button {
+  background-color: #dc3545;
+}
+
+.stop-button:hover {
+  background-color: #c82333;
 }
 </style>
