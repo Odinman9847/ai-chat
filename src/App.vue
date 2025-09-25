@@ -58,7 +58,8 @@ async function handleNewMessage(messageText: string) {
 
   try {
     const messagesForApi = messages.value.map(({ id, ...rest }) => rest);
-    const apiUrl = "http://localhost:11434/v1/chat/completions";
+    // const apiUrl = "http://localhost:11434/v1/chat/completions";
+    const apiUrl = `${import.meta.env.VITE_API_URL}/v1/chat/completions`;
 
     const response = await fetch(apiUrl, {
       method: "POST",
