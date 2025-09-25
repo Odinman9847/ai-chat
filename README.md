@@ -1,6 +1,6 @@
 # AI Chat
 
-A simple, privacy-focused chatbot interface for self-hosted Large Language Models.
+A simple chatbot interface for self-hosted Large Language Models.
 
 ![Project Screenshot](public/screenshot.png)
 
